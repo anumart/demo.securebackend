@@ -16,7 +16,9 @@ services:
       - "3305:3306" # map พอร์ต 3306 ของ host ไปยัง 3306 ของคอนเทนเนอร์
     volumes:
       # เก็บข้อมูล DB ไว้บน host เพื่อไม่ให้ข้อมูลหายเมื่อคอนเทนเนอร์หยุดทำงาน
-      - D:/workspace/mysql-data:/var/lib/mysql
+      - D:/workspace/mysql-data/secure_db.sql:/var/lib/mysql
+    networks:
+      - mynetwork
 
   # 🌐 บริการ Spring Boot Application
   app:
@@ -28,10 +30,15 @@ services:
       - db # ตรวจสอบให้แน่ใจว่า mysqldb รันก่อน app
     environment:
       # การตั้งค่าการเชื่อมต่อ DB สำหรับ Spring Boot (อาจต้องปรับตามโค้ด)
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3305/secure_db?useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/secure_db?useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: P@ssw0rd
+    networks:
+      - mynetwork
 
+networks:
+  mynetwork:
+    driver: bridge
 # กำหนด volumes ที่ใช้
 #volumes:
 #  mysql_data:

@@ -9,12 +9,12 @@ spring:
   # spring.datasource.password=${DB_PASSWORD}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: ${SPRING_DATASOURCE_URL}
-#    username: ${SPRING_DATASOURCE_USERNAME}
-#    password: ${SPRING_DATASOURCE_PASSWORD}
-    url: jdbc:mysql://mysql-container:3306/secure_db
-    username: root
-    password: P@ssw0rd
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: jdbc:mysql://anumart-db.cuzoice40jy1.us-east-1.rds.amazonaws.com:3306/secure_db
+#    username: root
+#    password: CqC~2rKg!6tQg2c
     hikari:
       connection-test-query: SELECT 1
   jpa:
