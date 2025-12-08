@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: demo.securebackend
+  # ===============================================
+  # การกำหนดค่าฐานข้อมูล MySQL (JPA)
+  # ===============================================
+  # **สำคัญ:** ใน Production ให้ใช้ Environment Variables เพื่อป้องกันการเปิดเผยรหัสผ่าน
+  # spring.datasource.username=${DB_USERNAME}
+  # spring.datasource.password=${DB_PASSWORD}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: ${SPRING_DATASOURCE_URL}
+#    username: ${SPRING_DATASOURCE_USERNAME}
+#    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://mysql-container:3306/secure_db
+    username: root
+    password: P@ssw0rd
+    hikari:
+      connection-test-query: SELECT 1
+  jpa:
+    hibernate:
+      ddl-auto: update
+      transaction:
+        jta:
+          platform:
+    show-sql: true
+    properties:
+      hibernate:
+        default_catalog: secure_db
+#    Hibernate เวอร์ชันใหม่ๆ มีการเปลี่ยนแปลงเพื่อให้การจัดการ dialect เป็นอัตโนมัติมากขึ้น
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQLDialect
+server:
+  servlet:
+    contextPath: /auth-api
+  port: 8080
+  http2:
+    enabled: true
+# ใช้ HTTPS เสมอ: ใน production ควรตั้งค่า SSL/TLS ใน Reverse Proxy (เช่น Nginx)
+# หรือโหลด keystore ที่นี่:
+# server.ssl.enabled=true
+# server.ssl.key-store-type=PKCS12
+# server.ssl.key-store=classpath:keystore.p12
+# server.ssl.key-store-password=password
+# server.port=8443
+
+# ===============================================
+# การกำหนดค่า Logging (การดีบัก)
+# ===============================================
+# กำหนดระดับ logging ทั่วไปให้เป็น INFO
+logging:
+  level:
+    root: INFO
+  # กำหนดระดับ logging สำหรับ Spring Security ให้เป็น DEBUG เพื่อช่วยในการดีบัก
+    org:
+      springframework:
+        security: DEBUG
+  # กำหนด logging สำหรับโค้ดของเรา
+    com:
+      example:
+        backend: DEBUG
+
+# ===============================================
+# การกำหนดค่า JWT Secret Key
+# ===============================================
+# **สำคัญ:** คีย์นี้ต้องถูกเก็บเป็นความลับและมีความซับซ้อนสูง
+# ควรใช้ Environment Variable เพื่อเก็บคีย์จริง
+jwt:
+  secret-key: ${JWT_SECRET:404E635266556A586E3272357538784102A472D4B61506453676907B079244264528482B4D6251655468576D5A7133743677397A24432646294A404E635266556A586E32723575387841}
+  # อายุการใช้งาน Token (วินาที)
+  expiration: 3600 # 1 ชั่วโมง
+  refresh-expiration: 86400 # 24 ชั่วโมง

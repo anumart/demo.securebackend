@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # 💾 บริการ MySQL Database
+  db:
+    image: mysql:latest # ใช้ official image ของ MySQL
+    container_name: mysql-container
+    restart: always
+    environment:
+      # กำหนดค่าตัวแปรสภาพแวดล้อมของ MySQL
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_DATABASE: secure_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: P@ssw0rd
+    ports:
+      - "3305:3306" # map พอร์ต 3306 ของ host ไปยัง 3306 ของคอนเทนเนอร์
+    volumes:
+      # เก็บข้อมูล DB ไว้บน host เพื่อไม่ให้ข้อมูลหายเมื่อคอนเทนเนอร์หยุดทำงาน
+      - D:/workspace/mysql-data:/var/lib/mysql
+
+  # 🌐 บริการ Spring Boot Application
+  app:
+    container_name: auth-api-container
+    build: . # สร้าง image จาก Dockerfile ใน directory ปัจจุบัน
+    ports:
+      - "8080:8080" # map พอร์ต 8080 ของ host ไปยัง 8080 ของคอนเทนเนอร์
+    depends_on:
+      - db # ตรวจสอบให้แน่ใจว่า mysqldb รันก่อน app
+    environment:
+      # การตั้งค่าการเชื่อมต่อ DB สำหรับ Spring Boot (อาจต้องปรับตามโค้ด)
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3305/secure_db?useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: P@ssw0rd
+
+# กำหนด volumes ที่ใช้
+#volumes:
+#  mysql_data:
