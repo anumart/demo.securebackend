@@ -12,11 +12,18 @@ services:
       MYSQL_DATABASE: secure_db
       MYSQL_USER: root
       MYSQL_PASSWORD: P@ssw0rd
+    healthcheck:
+      # คำสั่งทดสอบ: ใช้ database เพื่อเช็คว่า DB พร้อมรับคำสั่งหรือไม่
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD -d $$MYSQL_DATABASE" ]
+#      interval: 10s # ตรวจสอบทุก 10 วินาที
+#      timeout: 5s   # รอคำตอบไม่เกิน 5 วินาที
+#      retries: 5    # หากล้มเหลว 5 ครั้งถือว่า unhealthy
+#      start_period: 30s # ช่วงเวลาเริ่มต้นที่ยอมให้ fail ได้
     ports:
       - "3305:3306" # map พอร์ต 3306 ของ host ไปยัง 3306 ของคอนเทนเนอร์
     volumes:
-      # เก็บข้อมูล DB ไว้บน host เพื่อไม่ให้ข้อมูลหายเมื่อคอนเทนเนอร์หยุดทำงาน
-      - D:/workspace/mysql-data/secure_db.sql:/var/lib/mysql
+      - D:/workspace/Demo/init-db:/docker-entrypoint-initdb.d # Initializing a fresh instance
+      - D:/workspace/mysql-data:/var/lib/mysql # เก็บข้อมูล DB ไว้บน host เพื่อไม่ให้ข้อมูลหายเมื่อคอนเทนเนอร์หยุดทำงาน
     networks:
       - mynetwork
 
@@ -27,10 +34,11 @@ services:
     ports:
       - "8080:8080" # map พอร์ต 8080 ของ host ไปยัง 8080 ของคอนเทนเนอร์
     depends_on:
-      - db # ตรวจสอบให้แน่ใจว่า mysqldb รันก่อน app
+      db:
+        condition: service_healthy # รอจนกว่า 'db' จะ healthy
     environment:
       # การตั้งค่าการเชื่อมต่อ DB สำหรับ Spring Boot (อาจต้องปรับตามโค้ด)
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/secure_db?useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/secure_db?useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: P@ssw0rd
     networks:

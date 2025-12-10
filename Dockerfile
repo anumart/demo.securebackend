@@ -23,5 +23,18 @@ COPY src/main/resources/application.yaml /app/config/application.yaml
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
 
+#Create network
+#docker network create my-network-1
+
+#For db
+#docker run --name mysql-container -p 3305:3306 --network my-network-1 -v D:/workspace/mysql-data:/var/lib/mysql -v D:/workspace/Demo/init-db:/docker-entrypoint-initdb.d -e MYSQL_ROOT_PASSWORD=P@ssw0rd -d mysql:latest
+
 #docker build -t auth-api .
-#docker run -d --network my-spring-mysql-net -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql-container:3306/secure_db" -e SPRING_DATASOURCE_USERNAME="root" -e SPRING_DATASOURCE_PASSWORD="P@ssw0rd" -p 8080:8080 --name auth-api-container auth-api rm
+#docker run --name auth-api-container -d -p 8080:8080 --network my-network-1 -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql-container:3306/secure_db" -e SPRING_DATASOURCE_USERNAME="root" -e SPRING_DATASOURCE_PASSWORD="P@ssw0rd" auth-api rm
+
+
+#docker run --name auth-api-container -d -p 8080:8080 --network my-network-1 -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql-container:3306/secure_db" -e SPRING_DATASOURCE_USERNAME="root" -e SPRING_DATASOURCE_PASSWORD="P@ssw0rd" auth-api  rm
+
+#docker run -d -p 8080:8080 --name auth-api-container auth-api --network my-network-1 -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql-container:3306/secure_db" -e SPRING_DATASOURCE_USERNAME="root" -e SPRING_DATASOURCE_PASSWORD="P@ssw0rd" rm
+
+#docker run --name mysql-container -p 3306:3306 --network my-network-1 -v /home/ubuntu/mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=P@ssw0rd -d mysql:8.0
